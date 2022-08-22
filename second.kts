@@ -13,11 +13,25 @@ val composedWordLength = 6
   val secondWordCandidates = lengthToWordMap[secondWordLength] ?: emptyList<String>()
   val composedWordCandidates = lengthToWordMap[composedWordLength] ?: emptyList<String>()
 
-  firstWordCandidates.forEach { firstWord ->
-    secondWordCandidates.forEach { secondWord ->
-      val composedWord = firstWord + secondWord
-      if (composedWordCandidates.contains(composedWord)) {
-        println("$firstWord + $secondWord => $composedWord")
+  val composedWordStartsWithFirstWords = firstWordCandidates.map { firstWord ->
+    val candidate = composedWordCandidates
+      .filter { it.startsWith(firstWord) }
+      .toSet()
+    Pair(firstWord, candidate)
+  }
+
+  val composedWordEndsWithSecondWords = secondWordCandidates.map { secondWord ->
+    val candidate = composedWordCandidates
+      .filter { it.endsWith(secondWord) }
+      .toSet()
+    Pair(secondWord, candidate)
+  }
+
+  composedWordStartsWithFirstWords.forEach { (firstWord, cand1) ->
+    composedWordEndsWithSecondWords.forEach { (secondWord, cand2) ->
+      val commonWord = cand1 intersect cand2
+      if (commonWord.size == 1) {
+        println("$firstWord + $secondWord => ${firstWord + secondWord}")
       }
     }
   }
