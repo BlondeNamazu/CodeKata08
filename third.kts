@@ -19,7 +19,7 @@ fun divideWord(word: String, prefixList: List<String>) : List<List<String>> {
 (lengthToWordMap[6] ?: emptyList<String>()).forEach { word ->
   val answers = divideWord(word, emptyList())
   answers
-    .filter { it.size > 1}
+    .filter { it.size == 2}
     .forEach { list ->
       list.forEach { word ->
         print("$word,") 
