@@ -4,36 +4,27 @@ val wordList = File("dictionary.txt").readLines()
 
 val lengthToWordMap = wordList.groupBy { word -> word.length }
 
-val composedWordLength = 6
-
-(1 until composedWordLength).forEach { firstWordLength ->
-  val secondWordLength = composedWordLength - firstWordLength
-  
-  val firstWordCandidates = lengthToWordMap[firstWordLength] ?: emptyList<String>()
-  val secondWordCandidates = lengthToWordMap[secondWordLength] ?: emptyList<String>()
-  val composedWordCandidates = lengthToWordMap[composedWordLength] ?: emptyList<String>()
-
-  val composedWordStartsWithFirstWords = firstWordCandidates.map { firstWord ->
-    val candidate = composedWordCandidates
-      .filter { it.startsWith(firstWord) }
-      .toSet()
-    Pair(firstWord, candidate)
-  }
-
-  val composedWordEndsWithSecondWords = secondWordCandidates.map { secondWord ->
-    val candidate = composedWordCandidates
-      .filter { it.endsWith(secondWord) }
-      .toSet()
-    Pair(secondWord, candidate)
-  }
-
-  composedWordStartsWithFirstWords.forEach { (firstWord, cand1) ->
-    composedWordEndsWithSecondWords.forEach { (secondWord, cand2) ->
-      val commonWord = cand1 intersect cand2
-      if (commonWord.size == 1) {
-        println("$firstWord + $secondWord => ${firstWord + secondWord}")
+fun divideWord(word: String, prefixList: List<String>) : List<List<String>> {
+  return (1..word.length)
+    .mapNotNull { prefixLength ->
+      lengthToWordMap[prefixLength]?.firstOrNull {
+        word.startsWith(it)
       }
+    }.flatMap { prefix ->
+      if(prefix.length == word.length) listOf(prefixList.plus(prefix))
+      else divideWord(word.substring(prefix.length), prefixList.plus(prefix))
     }
-  }
+}
+
+(lengthToWordMap[6] ?: emptyList<String>()).forEach { word ->
+  val answers = divideWord(word, emptyList())
+  answers
+    .filter { it.size > 1}
+    .forEach { list ->
+      list.forEach { word ->
+        print("$word,") 
+      }
+      println()
+    }
 }
 
