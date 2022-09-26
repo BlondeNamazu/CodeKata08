@@ -2,16 +2,16 @@ import java.io.File
 
 val wordList = File("dictionary.txt").readLines()
 
-val lengthToWordMap = wordList.groupBy { word -> word.length }
+val lengthToWordMap = wordList.groupBy { word -> word.length }.mapValues { it.value.toSet() }
 
 fun divideWord(word: String) : List<Pair<String,String>> {
   return (1..word.length)
-    .mapNotNull { prefixLength ->
-      lengthToWordMap[prefixLength]?.firstOrNull {
-        word.startsWith(it)
-      }
-    }.mapNotNull { prefix ->
-      val suffix = word.substring(prefix.length)
+    .filter { prefixLength ->
+      val prefix = word.substring(0, prefixLength)
+      lengthToWordMap[prefixLength]?.contains(prefix) == true
+    }.mapNotNull { prefixLength ->
+      val prefix = word.substring(0, prefixLength)
+      val suffix = word.substring(prefixLength)
       if(lengthToWordMap[suffix.length]?.contains(suffix) == true) Pair(prefix, suffix)
       else null
     }
