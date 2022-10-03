@@ -1,6 +1,6 @@
 import java.io.File
 
-val wordList = File("dictionary.txt").readLines()
+val wordList = File("../dictionary.txt").readLines()
 
 // O(N)
 val lengthToWordMap = wordList.groupBy { word -> word.length }.mapValues { it.value.toSet() }
